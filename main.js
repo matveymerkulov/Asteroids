@@ -1,15 +1,17 @@
-import {apsk, loc, loopedSound, paused, play, togglePause} from "../lib/system.js"
-import {LinearChange} from "../lib/actions/linear_change.js"
-import {project} from "../lib/project.js"
-import {currentCanvas} from "../lib/canvas.js"
-import {bounds, forward, hud, left, messageLabel, newGame, pause, registry, right,} from "./registry.js"
-import {Move} from "../lib/actions/sprite/move.js"
-import {Num} from "../lib/variable/number.js"
-import {Layer} from "../lib/layer.js"
+import {apsk, loc, loopedSound, paused, play, togglePause} from "../Furca/src/system.js"
+import {LinearChange} from "../Furca/src/actions/linear_change.js"
+import {project} from "../Furca/src/project.js"
+import {currentCanvas} from "../Furca/src/canvas.js"
+import {bounds, forward, hud, left, mainSettings, messageLabel, newGame, pause, right,} from "./data/main.js"
+import {Move} from "../Furca/src/actions/sprite/move.js"
+import {Num} from "../Furca/src/variable/number.js"
+import {Layer} from "../Furca/src/layer.js"
 import {createAsteroid, destroyAsteroid, onAsteroidHit} from "./asteroid.js"
 import {explodingAsteroidLevelInit} from "./exploding_asteroid.js"
 import {destroyShip, flameSprite, invulnerabilityAction, shipSprite} from "./ship.js"
-import {rad, rnd} from "../lib/functions.js"
+import {rad, rnd} from "../Furca/src/functions.js"
+import {shipSettings} from "./data/ship.js"
+import {asteroids, asteroidSettings} from "./data/asteroids.js"
 
 // variables
 
@@ -21,7 +23,6 @@ export const level = new Num()
 
 export const bullets = new Layer()
 export const shipLayer = new Layer()
-export const asteroids = new Layer()
 export const particles = new Layer()
 export const bonuses = new Layer()
 export const explosions = new Layer()
@@ -82,8 +83,7 @@ export function setCurrentWeapon(weapon) {
 }
 
 export function initUpdate() {
-    let template = registry.template
-    lives.value = registry.lives
+    lives.value = mainSettings.lives
 
     loopedSound("music", 0, 1.81, true)
     let flameSound = loopedSound("flame", 1.1, 1.9)
@@ -92,20 +92,20 @@ export function initUpdate() {
 
     function initLevel(num) {
         for(let i = 0; i < num; i++) {
-            let asteroid = createAsteroid(template.asteroidType.big, rnd(rad(360)))
+            let asteroid = createAsteroid(asteroidSettings.big, rnd(rad(360)))
             asteroid.moveToPerimeter(bounds)
         }
         explodingAsteroidLevelInit(num)
-        if(level > 1) score.increment(registry.levelBonus)
+        if(level > 1) score.increment(mainSettings.levelBonus)
     }
 
     function reset() {
-        lives.value = registry.lives
+        lives.value = mainSettings.lives
         score.value = 0
         asteroids.clear()
         level.value = 0
-        nextLifeBonus = registry.lifeBonus
-        currentWeapon = registry.startingWeapon
+        nextLifeBonus = mainSettings.lifeBonus
+        currentWeapon = mainSettings.startingWeapon
     }
 
     reset()
@@ -128,20 +128,20 @@ export function initUpdate() {
 
         if(currentState === State.alive) {
             if(left.isDown) {
-                LinearChange.execute(shipSprite, "angle", -rad(registry.shipAngularSpeed))
+                LinearChange.execute(shipSprite, "angle", -rad(shipSettings.angularSpeed))
             }
 
             if(right.isDown) {
-                LinearChange.execute(shipSprite, "angle", rad(registry.shipAngularSpeed))
+                LinearChange.execute(shipSprite, "angle", rad(shipSettings.angularSpeed))
             }
 
             if(forward.isDown) {
-                LinearChange.execute(shipSprite,"speed", registry.shipAcceleration, 0
-                    , registry.shipAccelerationLimit)
+                LinearChange.execute(shipSprite,"speed", shipSettings.acceleration, 0
+                    , shipSettings.accelerationLimit)
                 // noinspection JSIgnoredPromiseFromCall
                 flameSound?.play()
             } else {
-                LinearChange.execute(shipSprite, "speed", -registry.shipDeceleration, 0)
+                LinearChange.execute(shipSprite, "speed", -shipSettings.deceleration, 0)
                 if(!flameSound.paused) flameSound.pause()
                 flameSound.currentTime = 0
             }
@@ -160,7 +160,7 @@ export function initUpdate() {
             if(currentState === State.dead) {
                 lives.decrement()
                 invulnerable = true
-                invTime = registry.invulnerabilityTime
+                invTime = mainSettings.invulnerabilityTime
             } else {
                 reset()
             }
@@ -169,7 +169,7 @@ export function initUpdate() {
             if(!flameSound.paused) flameSound.pause()
         }
 
-        if(asteroids.isEmpty()) {
+        if(asteroids.isEmpty) {
             level.increment()
             initLevel(level.value)
             play("new_level")
@@ -182,7 +182,7 @@ export function initUpdate() {
 
         // weapon
 
-        for(const weapon of Object.values(template.weapon)) {
+        for(const weapon of Object.values(mainSettings.weapon)) {
             weapon.update?.()
         }
 

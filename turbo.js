@@ -1,5 +1,5 @@
-import {apsk} from "../lib/system.js"
-import {Action} from "../lib/actions/action.js"
+import {apsk} from "../Furca/src/system.js"
+import {Action} from "../Furca/src/actions/action.js"
 
 export class Turbo extends Action {
     constructor(key, cooldown) {

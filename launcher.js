@@ -1,29 +1,24 @@
-import {currentState, State} from "./main.js"
-import {Sprite} from "../lib/sprite.js"
-import {registry} from "./registry.js"
-import {play} from "../lib/system.js"
+import {bullets, currentState, State} from "./main.js"
+import {Sprite} from "../Furca/src/sprite.js"
+import {play} from "../Furca/src/system.js"
 import {explosionDamage} from "./explosion.js"
 import {destroyShip, gun, shipSprite} from "./ship.js"
+import {launcherSettings} from "./data/launcher.js"
 
 
-export function initLauncher(texture) {
-
-    // missile launcher
-
-    let launcher = registry.template.weapon.launcher
-
-    launcher.missile.parameters.onHit = function() {
+export function initLauncher() {
+    launcherSettings.missile.parameters.onHit = function() {
         explosionDamage(this)
         if(this.collidesWithSprite(shipSprite)) {
             destroyShip()
         }
     }
 
-    launcher.update = function() {
+    launcherSettings.update = function() {
         if(currentState !== State.alive) return
 
         if(this.ammo.value > 0 && this.controller.active()) {
-            let missile = Sprite.createFromTemplate(this.missile)
+            let missile = Sprite.create(this.missile, bullets)
             missile.setPositionAs(gun)
             missile.turn(shipSprite.angle)
             this.ammo.decrement()
@@ -31,7 +26,7 @@ export function initLauncher(texture) {
         }
     }
 
-    launcher.collect = function() {
+    launcherSettings.collect = function() {
         this.ammo.increment(1, this.maxAmmo)
     }
 }

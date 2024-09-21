@@ -1,50 +1,62 @@
-import {bounds, registry} from "./registry.js"
-import {Sprite} from "../lib/sprite.js"
-import {play} from "../lib/system.js"
-import {DelayedHide} from "../lib/actions/sprite/delayed_hide.js"
+import {bounds, mainSettings} from "./data/main.js"
+import {Sprite} from "../Furca/src/sprite.js"
+import {play} from "../Furca/src/system.js"
+import {DelayedHide} from "../Furca/src/actions/sprite/delayed_hide.js"
 import {bullets, currentState, currentWeapon, setCurrentWeapon, shipLayer, State} from "./main.js"
-import {Constraint} from "../lib/constraint.js"
-import {project} from "../lib/project.js"
-import {RemoveIfOutside} from "../lib/actions/sprite/remove_if_outside.js"
-import {shipSprite} from "./ship.js"
+import {Constraint} from "../Furca/src/constraint.js"
+import {project} from "../Furca/src/project.js"
+import {RemoveIfOutside} from "../Furca/src/actions/sprite/remove_if_outside.js"
+import {flameSprite, shipSprite} from "./ship.js"
 
-export function initTurret(texture) {
-    let turret = registry.template.weapon.turret
+export function initTurret() {
+    let turret = mainSettings.weapon.turret
+
+    const sprite = Sprite.create(turret.sprite, shipLayer)
+    sprite.visible = false
+    shipLayer.add(sprite)
+
+    turret.gunfireSprites = []
+    for (let i = 0; i <= 1; i++) {
+        const gunfire = Sprite.create(turret.gunfire)
+        gunfire.setPositionAs(shipSprite, 0.4, 0.4 - 0.8 * i)
+        gunfire.hide()
+        turret.gunfireSprites.push(gunfire)
+        shipLayer.add(gunfire)
+        project.actions.push(new Constraint(gunfire, sprite))
+    }
 
     turret.collect = function() {
         setCurrentWeapon(this)
         this.ammo.increment(this.bonusAmmo, this.maxAmmo)
-        this.sprite.visible = true
+        sprite.visible = true
     }
 
     turret.update = function() {
         for (let i = 0; i <= 1; i++) {
-            let gunfire = this.gunfire[i]
-            gunfire.setPositionAs(this.barrelEnd[i])
+            let gunfire = turret.gunfireSprites[i]
             gunfire.setAngleAs(shipSprite)
         }
 
-        if(currentWeapon !== this || currentState !== State.alive) return
-        let sprite = this.sprite
+        if(currentWeapon !== turret || currentState !== State.alive) return
 
-        if(this.controller.active()) {
+        if(turret.controller.active()) {
             for (let i = 0; i <= 1; i++) {
-                let bullet = Sprite.createFromTemplate(this.bullet)
-                bullet.setPositionAs(this.barrelEnd[i])
+                let gunfire = turret.gunfireSprites[i]
+                gunfire.actions = [new DelayedHide(gunfire, turret.gunfireTime)]
+                gunfire.show()
+
+                let bullet = Sprite.create(turret.bullet, bullets)
+                bullet.setPositionAs(gunfire)
                 bullet.setAngleAs(shipSprite)
                 bullet.onHit = () => {
                     play("bullet_hit")
                 }
-
-                let gunfire = this.gunfire[i]
-                gunfire.actions = [new DelayedHide(gunfire, this.gunfireTime)]
-                gunfire.show()
             }
             play("bullet")
             this.ammo.decrement()
             if(this.ammo.value === 0) {
                 sprite.visible = false
-                setCurrentWeapon(registry.template.weapon.fireball)
+                setCurrentWeapon(mainSettings.weapon.fireball)
             }
         }
 
@@ -52,14 +64,7 @@ export function initTurret(texture) {
         sprite.angle = shipSprite.angle
     }
 
-    turret.sprite.visible = false
-    shipLayer.add(turret.sprite)
-
-    project.actions.push(
-        new Constraint(turret.barrelEnd[0], turret.sprite),
-        new Constraint(turret.barrelEnd[1], turret.sprite),
-        new RemoveIfOutside(bullets, bounds),
-    )
+    project.actions.push(new RemoveIfOutside(bullets, bounds))
 }
 
 
