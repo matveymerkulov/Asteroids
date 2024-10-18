@@ -3,6 +3,7 @@ import {Sprite} from "../Furca/src/sprite.js"
 import {play} from "../Furca/src/system.js"
 import {gun, shipSprite} from "./ship.js"
 import {mainSettings} from "./data/main.js"
+import {AngularSprite} from "../Furca/src/angular_sprite.js"
 
 export function initFireball() {
     let fireball = mainSettings.weapon.fireball
@@ -10,7 +11,7 @@ export function initFireball() {
         if(currentWeapon !== this || currentState !== State.alive) return
 
         if(fireball.controller.active()) {
-            let bullet = Sprite.create(fireball.bullet, bullets)
+            let bullet = AngularSprite.create(fireball.bullet, bullets)
             bullet.setPositionAs(gun)
             bullet.turn(shipSprite.angle)
             play("fireball")

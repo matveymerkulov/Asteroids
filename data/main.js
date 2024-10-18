@@ -19,6 +19,9 @@ import {fireballSettings} from "./fireball.js"
 import {launcherSettings} from "./launcher.js"
 import {turretSettings} from "./turret.js"
 import {asteroids} from "./asteroids.js"
+import {Cos} from "../../Furca/src/function/cos.js"
+import {rad} from "../../Furca/src/functions.js"
+import "./text.js"
 
 export let left = new Key("ArrowLeft")
 export let right = new Key("ArrowRight")
@@ -28,13 +31,17 @@ export let pause = new Key("KeyP")
 
 export let messageLabel, hud, bounds
 
-
 export const mainSettings = {
     lives: 3,
     startingLives: 3,
     lifeBonus: 25000,
     levelBonus: 1000,
     invulnerabilityTime: 2,
+
+    bonus: {
+        sizeAnimation: new Cos(0.45, 0.1, 0, 1),
+        angleAnimation: new Cos(0.9, rad(15)),
+    },
 
     explosion: {
         layer: explosions,
@@ -53,7 +60,7 @@ export const mainSettings = {
         fireball: fireballSettings,
         turret: turretSettings,
         launcher: launcherSettings,
-    },
+    }
 }
 
 
@@ -95,39 +102,4 @@ project.init = () => {
     currentCanvas.background = "rgb(9, 44, 84)"
 
     initUpdate()
-}
-
-
-project.locales.en = {
-    // hud
-
-    level: "LEVEL ",
-    pressEnter: "PRESS ENTER",
-    gameOver: "GAME OVER",
-    paused: "PAUSED",
-    ammo: "AMMO: ",
-    missiles: "MISSILES: ",
-
-    // keys
-
-    left: "Turn left",
-    right: "Turn right",
-    forward: "Thrust",
-    fire: "Fire",
-    pause: "Pause",
-}
-
-project.locales.ru = {
-    level: "УРОВЕНЬ ",
-    pressEnter: "НАЖМИТЕ ENTER",
-    gameOver: "ИГРА ОКОНЧЕНА",
-    paused: "ПАУЗА",
-    ammo: "ПАТРОНЫ: ",
-    missiles: "РАКЕТЫ: ",
-
-    left: "Повернуть влево",
-    right: "Повернуть вправо",
-    forward: "Ускоряться",
-    fire: "Стрелять",
-    pause: "Пауза",
 }

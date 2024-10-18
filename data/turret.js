@@ -1,5 +1,5 @@
 import {Turbo} from "../turbo.js"
-import {bullets, shipLayer} from "../main.js"
+import {bullets} from "../main.js"
 import {Num} from "../../Furca/src/variable/number.js"
 import {fire} from "./fireball.js"
 

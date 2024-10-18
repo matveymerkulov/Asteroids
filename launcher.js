@@ -4,6 +4,7 @@ import {play} from "../Furca/src/system.js"
 import {explosionDamage} from "./explosion.js"
 import {destroyShip, gun, shipSprite} from "./ship.js"
 import {launcherSettings} from "./data/launcher.js"
+import {AngularSprite} from "../Furca/src/angular_sprite.js"
 
 
 export function initLauncher() {
@@ -18,7 +19,7 @@ export function initLauncher() {
         if(currentState !== State.alive) return
 
         if(this.ammo.value > 0 && this.controller.active()) {
-            let missile = Sprite.create(this.missile, bullets)
+            let missile = AngularSprite.create(this.missile, bullets)
             missile.setPositionAs(gun)
             missile.turn(shipSprite.angle)
             this.ammo.decrement()

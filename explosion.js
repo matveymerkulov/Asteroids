@@ -10,6 +10,7 @@ import {asteroids} from "./data/asteroids.js"
 import {project} from "../Furca/src/project.js"
 import {ImageArray} from "../Furca/src/image_array.js"
 import {Animate} from "../Furca/src/actions/sprite/animate.js"
+import {AngularSprite} from "../Furca/src/angular_sprite.js"
 
 
 export function explosionDamage(sprite) {
@@ -24,7 +25,7 @@ export function explosionDamage(sprite) {
 }
 
 export function createSingleExplosion(sprite, size, playSnd = true) {
-    let explosion = Sprite.create(mainSettings.explosion, explosions)
+    let explosion = AngularSprite.create(mainSettings.explosion, explosions)
     explosion.size = size
     explosion.setPosition(sprite.x, sprite.y)
     project.actions.push(new DelayedRemove(explosion, explosions, 1.0))

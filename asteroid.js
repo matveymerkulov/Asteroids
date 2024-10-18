@@ -1,6 +1,5 @@
 import {num} from "../Furca/src/system.js"
 import {Sprite} from "../Furca/src/sprite.js"
-import {Cos} from "../Furca/src/function/cos.js"
 import {bonuses, score} from "./main.js"
 import {RotateImage} from "../Furca/src/actions/sprite/rotate_image.js"
 import {createExplosion, createSingleExplosion} from "./explosion.js"
@@ -9,10 +8,11 @@ import {AnimateSize} from "../Furca/src/actions/sprite/animate_size.js"
 import {AnimateAngle} from "../Furca/src/actions/sprite/animate_angle.js"
 import {rad, rnd} from "../Furca/src/functions.js"
 import {asteroids, asteroidSettings} from "./data/asteroids.js"
+import {AngularSprite} from "../Furca/src/angular_sprite.js"
 
 
 export function createAsteroid(type, angle = 0) {
-    let asteroid = Sprite.create(type, asteroids)
+    let asteroid = AngularSprite.create(type, asteroids)
     asteroid.turn(angle)
     asteroid.type = type
     asteroid.imageAngle = 0
@@ -47,11 +47,11 @@ export function destroyAsteroid(asteroid, angle) {
         if(!weaponBonus) continue
         if(rnd() > weaponBonus.probability) continue
 
-        let bonus = Sprite.create(weaponBonus, bonuses)
+        let bonus = AngularSprite.create(weaponBonus, bonuses)
         bonus.weapon = weapon
         bonus.setPositionAs(asteroid)
-        bonus.add(new AnimateSize(bonus, new Cos(0.45, 0.1, 0, 1)))
-        bonus.add(new AnimateAngle(bonus, new Cos(0.9, rad(15))))
+        bonus.add(new AnimateSize(bonus, mainSettings.bonus.sizeAnimation))
+        bonus.add(new AnimateAngle(bonus, mainSettings.bonus.angleAnimation))
         return
     }
 }

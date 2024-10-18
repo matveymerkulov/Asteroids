@@ -1,4 +1,3 @@
-import {bullets} from "../main.js"
 import {Turbo} from "../turbo.js"
 import {Key} from "../../Furca/src/key.js"
 
